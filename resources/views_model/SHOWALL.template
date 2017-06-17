@@ -16,7 +16,7 @@ class **!!ENTITY!!**_SHOWALL{
 
 		include 'Header.php';
 ?>
-		<h1><?php echo $strings['Mostrar todos']. '**!!ENTITY!!**'; ?></h1>
+		<h1><?php echo $strings['Mostrar todos']. $strings['**!!ENTITY!!**']; ?></h1>
 		<a href='./**!!ENTITY!!**_Controller.php?action=SEARCH'><img src='../View/Icons/search.png'></a></a>
 		<a href='./**!!ENTITY!!**_Controller.php?action=ADD'><img src='../View/Icons/add.png'></a></br></br>
 		<br><br>
@@ -35,12 +35,14 @@ class **!!ENTITY!!**_SHOWALL{
 		foreach($this->lista as $titulo){
 			echo "<td>".$datos[$titulo]."</td>";
 		}
-		echo "<td>
-					<a href='USUARIOS_Controller.php?**!!KEY!!**=".$datos['**!!KEY!!**']."&action=EDIT'><img src='../View/Icons/edit.png'></a>
-					<a href='USUARIOS_Controller.php?**!!KEY!!**=".$datos['**!!KEY!!**']."&action=DELETE'><img src='../View/Icons/delete.png'></a>
-					<a href='USUARIOS_Controller.php?**!!KEY!!**=".$datos['**!!KEY!!**']."&action=SHOWCURRENT'><img src='../View/Icons/detalle.png'></a>
-				</td>";
-		echo "</tr>";
+		?>
+		 <td>
+					<a href='**!!ENTITY!!**_Controller.php?**!!KEYURL!!**&action=EDIT'><img src='../View/Icons/edit.png'></a>
+					<a href='**!!ENTITY!!**_Controller.php?**!!KEYURL!!**&action=DELETE'><img src='../View/Icons/delete.png'></a>
+					<a href='**!!ENTITY!!**_Controller.php?**!!KEYURL!!**&action=SHOWCURRENT'><img src='../View/Icons/detalle.png'></a>
+				</td>
+			</tr>
+<?php
 	}
 ?>
 		</table>

@@ -17,7 +17,7 @@ class **!!ENTITY!!**_EDIT{
 
   	?>
 
-    <h1><?php echo $strings['Insertar'] . ' **!!ENTITY!!**' ?></h1>
+    <h1><?php echo $strings['Insertar'] . $strings['**!!ENTITY!!**'] ?></h1>
     <a href="./**!!ENTITY!!**_Controller.php?action=SHOWALL">Back</a>
     <form action="./**!!ENTITY!!**_Controller.php?action=EDIT" method="POST">
 **!!INPUTS!!**

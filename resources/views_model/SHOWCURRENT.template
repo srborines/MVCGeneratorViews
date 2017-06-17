@@ -16,7 +16,7 @@ class **!!ENTITY!!**_SHOWCURRENT{
 
 
 	?>
-		<h1><?php echo $strings['Detalle'] . ' **!!ENTITY!!**' ?></h1>
+		<h1><?php echo $strings['Detalle'] . $strings['**!!ENTITY!!**'] ?></h1>
 		<form name='Form' action='**!!ENTITY!!**_Controller.php' method='post' onsubmit='comprobar()'>
 **!!INPUTS!!**
 		</form>

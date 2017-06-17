@@ -1,23 +1,21 @@
-
-
-	<?php
+<?php
 
 	class **!!ENTITY!!**_DELETE{
 
+	private $valores;
 
-		function __construct(){
+		function __construct($valores){
+			$this->valores = $valores;
 			$this->render();
 		}
 
 		function render(){
-	?>
 
-	<?php
 			include '../Locates/Strings_SPANISH.php';
-
 			include '../View/Header.php';
+
 	?>
-			<h1><?php echo $strings['Buscar'] . ' **!!ENTITY!!**' ?></h1>
+			<h1><?php echo $strings['Borrar'] . 'articulo' ?></h1>
 			<form name = 'Form' action='../Controller/**!!ENTITY!!**_Controller.php' method='post' onsubmit = 'comprobar()'>
 **!!INPUTS!!**
 				<input type='submit' name='action' value='DELETE'><br>

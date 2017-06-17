@@ -162,6 +162,9 @@ function step_4(){
         fwrite($file_open, generate_menu_view($entities));
         fclose($file_open);
 
+        //Initialize language variables
+        $lang_app_es = array();
+        $lang_app_en = array();
 
         //Create files
         global $views_available;
@@ -180,6 +183,16 @@ function step_4(){
             $filename = $entity[0]."_".$action_view."_View.php";
             $file = "./".$install_directory."/View/".$filename;
 
+            //Add translations of entity
+            $lang_app_en[$entity[0]] = $entity[0];
+            $lang_app_es[$entity[0]] = $entity[0];
+            $lang_app_en[$entity[0]." management"] = $entity[0]." management"."1";
+            $lang_app_es[$entity[0]." management"] = "Gestión de ".$entity[0]."1";
+            foreach ($field_list as $field) {
+              $lang_app_en[$field['Field']] = $field['Field']."1";
+              $lang_app_es[$field['Field']] = $field['Field']."1";
+            }
+
             try {
                 $file_open = fopen($file, "w");
                 $function_of_compose = "compose_".$action_view."_view";
@@ -193,6 +206,56 @@ function step_4(){
           //break;
         }
 
+
+        //Create directory 'Locates'
+        $path_locates = $install_directory."/Locates/";
+        if(!is_dir("./".$path_locates)) mkdir($path_locates);
+
+        //Create language files
+        $path_locates = $install_directory."/Locates/";
+        $filename_en = "Strings_ENGLISH.php";
+        $language_en_file = $path_locates.$filename_en;
+        if(file_exists($language_en_file)){
+          $language_en_file_content_base = file_get_contents($language_en_file);
+        }else{
+          $language_en_file_content_base = "<?php\n\$strings = \narray(\n)\n;\n ?>";
+        }
+        //TODO:fill with array
+        $parts_aux = explode("array(", $language_en_file_content_base);
+        $part1 = $parts_aux[0]."array(";
+        unset($parts_aux[0]);
+        $part3 = implode("",$parts_aux);
+        $part2 = "\n";
+        foreach ($lang_app_en as $key => $value) {
+          $part2 .= "'".$key."' => '".$value."',\n";
+        }
+        $file_end_content_en = $part1.$part2.$part3;
+        $file_open = fopen($language_en_file, "w");
+        fwrite($file_open, $file_end_content_en);
+        fclose($file_open);
+
+
+        $filename_es = "Strings_SPANISH.php";
+        $language_es_file = $path_locates.$filename_es;
+        if(file_exists($language_es_file)){
+          $language_es_file_content_base = file_get_contents($language_es_file);
+        }else{
+          $language_es_file_content_base = "<?php\n\$strings = \narray(\n)\n;\n ?>";
+        }
+        //TODO:fill with array
+        $parts_aux = explode("array(", $language_es_file_content_base);
+        $part1 = $parts_aux[0]."array(";
+        unset($parts_aux[0]);
+        print_r($parts_aux);
+        $part3 = implode("",$parts_aux);
+        $part2 = "\n";
+        foreach ($lang_app_es as $key => $value) {
+          $part2 .= "'".$key."' => '".$value."',\n";
+        }
+        $file_end_content_es = $part1.$part2.$part3;
+        $file_open = fopen($language_es_file, "w");
+        fwrite($file_open, $file_end_content_es);
+        fclose($file_open);
 
         renderView("index-4",[]);
         //Close Mysql connection
@@ -358,14 +421,15 @@ function compose_SEARCH_view($field_list, $entity){
 function compose_SHOWALL_view($field_list, $entity){
     $template = file_get_contents("./resources/views_model/SHOWALL.template");
 
-    $key = "";
+    $key = array();
     foreach ($field_list as $field) {
-      if($field['Key']) $key = $field['Field'];
+      if($field['Key']) $key[] = $field['Field']."=<?= \$datos['".$field['Field']."'] ?>";
     }
+    $key = implode("&", $key);
 
     $html = $template;
     $html = str_replace("**!!ENTITY!!**", $entity, $html);
-    $html = str_replace("**!!KEY!!**", $key, $html);
+    $html = str_replace("**!!KEYURL!!**", $key, $html);
 
     return $html;
 }
@@ -411,7 +475,7 @@ function generate_menu_view($entities){
   foreach ($entities as $entity) {
     $html .= "<li>";
     //TODO: translate it
-    $html .= "<a href='../Controller/".$entity[0]."_Controller.php'>".$entity[0]."</a>";
+    $html .= "<a href='../Controller/".$entity[0]."_Controller.php'><?= \$strings['".$entity[0]." management'] ?></a>";
     $html .= "</li>";
   }
   $html .= "\t</ul>\n</nav>";
