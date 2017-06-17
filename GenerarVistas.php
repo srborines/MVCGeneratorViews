@@ -139,8 +139,12 @@ function step_4(){
         //Select the unique database to use
         $conn->select_db($databasename);
 
+        //Create directory 'View' if doesn't exist
+        $path_views = $install_directory."/View/";
+        if(!is_dir("./".$path_views)) mkdir($path_views);
+
         //Create menu file view
-        $path_menu_file = $install_directory."/View/";
+        $path_menu_file = $path_views;
         $filename = "menuLateral.php";
         $file = $path_menu_file.$filename;
         $file_open = fopen($file, "w");
@@ -204,17 +208,26 @@ function compose_ADD_view($field_list, $entity){
   foreach ($field_list as $field) {
 
     if($field['Type'] == 'date'){
-      $inputs .= "\t\t\t<input type='date' name='".$entity."' size = '' value = '' onblur='esVacio(this)' ><br>\n";
-    }else if($field['Type'] == 'enum'){
-      $inputs .= $type."\n";
+      $inputs .= "\t\t\t".$field['Field']." :<input type='date' name='".$field['Field']."' size = '' value = '' onblur='esVacio(this)' ><br>\n";
     }else{
       $aux = explode("(", $field['Type']);
       $type = $aux[0];
-      $long = explode(")", $aux[1])[0];
-      if($type == 'int'){
-        $inputs .= "\t\t\t<input type='number' name='".$entity."' min ='' max='' value = '' onblur='esVacio(this)  && comprobarText(this,".$long.")' ><br>\n";
-      }else if($type == 'varchar'){
-        $inputs .= "\t\t\t<input type='text' name='".$entity."' size = '".$long."' value = '' onblur='esVacio(this)  && comprobarText(this,".$long.")' ><br>\n";
+      if($type == 'enum'){
+        $values = explode(")", $aux[1])[0];
+        $values_arr = explode(",", $values);
+        $inputs .= "\t\t\t".$field['Field']." :<select name='".$field['Field']."'>\n";
+        foreach ($values_arr as $key => $value){
+          $value_clean = trim($value ,"'");
+          $inputs .= "\t\t\t\t<option value='".$value_clean."'>".$value_clean."</option>\n";
+        }
+        $inputs .= "\t\t\t</select><br>\n";
+      }else{
+        $long = explode(")", $aux[1])[0];
+        if($type == 'int'){
+          $inputs .= "\t\t\t".$field['Field']." :<input type='number' name='".$field['Field']."' min ='' max='' value = '' onblur='esVacio(this)  && comprobarText(this,".$long.")' ><br>\n";
+        }else if($type == 'varchar'){
+          $inputs .= "\t\t\t".$field['Field']." :<input type='text' name='".$field['Field']."' size = '".$long."' value = '' onblur='esVacio(this)  && comprobarText(this,".$long.")' ><br>\n";
+        }
       }
     }
   }
@@ -230,18 +243,27 @@ function compose_DELETE_view($field_list, $entity){
     foreach ($field_list as $field) {
 
       if($field['Type'] == 'date'){
-        $inputs .= "\t\t\t<input type='date' name='".$entity."' size = '".$long."' value = '<?= \$this->valores['".$field['Field']."'] ?>' onblur='esVacio(this)'  required  readonly ><br>\n";
-      }else if($field['Type'] == 'enum'){
-        $inputs .= "\t\t\t".$type."\n";
+        $inputs .= "\t\t\t".$field['Field']." :<input type='date' name='".$field['Field']."' size = '".$long."' value = '<?= \$this->valores['".$field['Field']."'] ?>' onblur='esVacio(this)'  required  readonly ><br>\n";
       }else{
         $aux = explode("(", $field['Type']);
         $type = $aux[0];
-        $long = explode(")", $aux[1])[0];
-
-        if($type == 'int'){
-          $inputs .= "\t\t\t<input type='number' name='".$entity."' min ='' max='' value = '<?= \$this->valores['".$field['Field']."'] ?>' onblur='esVacio(this)  && comprobarText(this,".$long.")'  required  readonly ><br>\n";
-        }else if($type == 'varchar'){
-          $inputs .= "\t\t\t<input type='text' name='".$entity."' size = '".$long."' value = '<?= \$this->valores['".$field['Field']."'] ?>' onblur='esVacio(this)  && comprobarText(this,".$long.")'  required  readonly ><br>\n";
+        if($type == 'enum'){
+          $values = explode(")", $aux[1])[0];
+          $values_arr = explode(",", $values);
+          $inputs .= "\t\t\t".$field['Field']." :<select name='".$field['Field']."'>\n";
+          foreach ($values_arr as $key => $value){
+            $selected = "";
+            $value_clean = trim($value ,"'");
+            $inputs .= "\t\t\t\t<option value='".$value_clean."' <?php if(\$this->valores['".$field['Field']."'] == '".$value_clean."') echo 'selected'; ?>>".$value_clean."</option>\n";
+          }
+          $inputs .= "\t\t\t</select><br>\n";
+        }else{
+          $long = explode(")", $aux[1])[0];
+          if($type == 'int'){
+            $inputs .= "\t\t\t".$field['Field']." :<input type='number' name='".$field['Field']."' min ='' max='' value = '<?= \$this->valores['".$field['Field']."'] ?>' onblur='esVacio(this)  && comprobarText(this,".$long.")'  required  readonly ><br>\n";
+          }else if($type == 'varchar'){
+            $inputs .= "\t\t\t".$field['Field']." :<input type='text' name='".$field['Field']."' size = '".$long."' value = '<?= \$this->valores['".$field['Field']."'] ?>' onblur='esVacio(this)  && comprobarText(this,".$long.")'  required  readonly ><br>\n";
+          }
         }
       }
     }
@@ -257,18 +279,29 @@ function compose_EDIT_view($field_list, $entity){
   $inputs = "";
   foreach ($field_list as $field) {
     if($field['Type'] == 'date'){
-      $inputs .= "\t\t\t<input type='date' name='".$entity."' size = '".$long."' value = '<?= \$this->valores['".$field['Field']."'] ?>' onblur='esVacio(this)' ><br>\n";
-    }else if($field['Type'] == 'enum'){
-      $inputs .= "\t\t\t".$type."\n";
+      $inputs .= "\t\t\t".$field['Field']." :<input type='date' name='".$field['Field']."' size = '".$long."' value = '<?= \$this->valores['".$field['Field']."'] ?>' onblur='esVacio(this)' ><br>\n";
     }else{
       $aux = explode("(", $field['Type']);
       $type = $aux[0];
-      $long = explode(")", $aux[1])[0];
-
-      if($type == 'int'){
-        $inputs .= "\t\t\t<input type='number' name='".$entity."' min ='' max='' value = '<?= \$this->valores['".$field['Field']."'] ?>' onblur='esVacio(this)  && comprobarText(this,".$long.")' ><br>\n";
-      }else if($type == 'varchar'){
-        $inputs .= "\t\t\t<input type='text' name='".$entity."' size = '".$long."' value = '<?= \$this->valores['".$field['Field']."'] ?>' onblur='esVacio(this)  && comprobarText(this,".$long.")' ><br>\n";
+      if($type == 'enum'){
+        $values = explode(")", $aux[1])[0];
+        $values_arr = explode(",", $values);
+        $inputs .= "\t\t\t".$field['Field']." :<select name='".$field['Field']."'>\n";
+        foreach ($values_arr as $key => $value){
+          $selected = "";
+          $value_clean = trim($value ,"'");
+          $inputs .= "\t\t\t\t<option value='".$value_clean."' <?php if(\$this->valores['".$field['Field']."'] == '".$value_clean."') echo 'selected'; ?>>".$value_clean."</option>\n";
+        }
+        $inputs .= "\t\t\t</select><br>\n";
+      }else{
+        $long = explode(")", $aux[1])[0];
+        if($type == 'int'){
+          $inputs .= "\t\t\t".$field['Field']." :<input type='number' name='".$field['Field']."' min ='' max='' value = '<?= \$this->valores['".$field['Field']."'] ?>' onblur='esVacio(this)  && comprobarText(this,".$long.")' ><br>\n";
+        }else if($type == 'varchar'){
+          $inputs .= "\t\t\t".$field['Field']." :<input type='text' name='".$field['Field']."' size = '".$long."' value = '<?= \$this->valores['".$field['Field']."'] ?>' onblur='esVacio(this)  && comprobarText(this,".$long.")' ><br>\n";
+        }else{
+          $inputs .= "Field unrecognized: ".$field['Field'];
+        }
       }
     }
   }
@@ -283,18 +316,26 @@ function compose_SEARCH_view($field_list, $entity){
     $inputs = "";
     foreach ($field_list as $field) {
       if($field['Type'] == 'date'){
-        $inputs .= "\t\t\t<input type='date' name='".$entity."' size = '".$long."' value = '' onblur='esVacio(this)' ><br>\n";
-      }else if($field['Type'] == 'enum'){
-        $inputs .= $type."\n";
+        $inputs .= "\t\t\t".$field['Field']." :<input type='date' name='".$field['Field']."' size = '".$long."' value = '' onblur='esVacio(this)' ><br>\n";
       }else{
         $aux = explode("(", $field['Type']);
         $type = $aux[0];
-        $long = explode(")", $aux[1])[0];
-
-        if($type == 'int'){
-          $inputs .= "\t\t\t<input type='number' name='".$entity."' min ='' max='' value = '' onblur='esVacio(this)  && comprobarText(this,".$long.")' ><br>\n";
-        }else if($type == 'varchar'){
-          $inputs .= "\t\t\t<input type='text' name='".$entity."' size = '".$long."' value = '' onblur='esVacio(this)  && comprobarText(this,".$long.")' ><br>\n";
+        if($type == 'enum'){
+          $values = explode(")", $aux[1])[0];
+          $values_arr = explode(",", $values);
+          $inputs .= "\t\t\t".$field['Field']." :<select name='".$field['Field']."'>\n";
+          foreach ($values_arr as $key => $value){
+            $value_clean = trim($value ,"'");
+            $inputs .= "\t\t\t\t<option value='".$value_clean."'>".$value_clean."</option>\n";
+          }
+          $inputs .= "\t\t\t</select><br>\n";
+        }else{
+          $long = explode(")", $aux[1])[0];
+          if($type == 'int'){
+            $inputs .= "\t\t\t".$field['Field']." :<input type='number' name='".$field['Field']."' min ='' max='' value = '' onblur='esVacio(this)  && comprobarText(this,".$long.")' ><br>\n";
+          }else if($type == 'varchar'){
+            $inputs .= "\t\t\t".$field['Field']." :<input type='text' name='".$field['Field']."' size = '".$long."' value = '' onblur='esVacio(this)  && comprobarText(this,".$long.")' ><br>\n";
+          }
         }
       }
     }
@@ -323,18 +364,27 @@ function compose_SHOWCURRENT_view($field_list, $entity){
     foreach ($field_list as $field) {
 
       if($field['Type'] == 'date'){
-        $inputs .= "\t\t\t<input type='date' name='".$entity."' size = '".$long."' value = '<?= \$this->valores['".$field['Field']."'] ?>' onblur='esVacio(this)'  required  readonly ><br>\n";
-      }else if($field['Type'] == 'enum'){
-        $inputs .= "\t\t\t".$type."\n";
+        $inputs .= "\t\t\t".$field['Field']." :<input type='date' name='".$field['Field']."' size = '".$long."' value = '<?= \$this->valores['".$field['Field']."'] ?>' onblur='esVacio(this)'  required  readonly ><br>\n";
       }else{
         $aux = explode("(", $field['Type']);
         $type = $aux[0];
-        $long = explode(")", $aux[1])[0];
-
-        if($type == 'int'){
-          $inputs .= "\t\t\t<input type='number' name='".$entity."' min ='' max='' value = '<?= \$this->valores['".$field['Field']."'] ?>' onblur='esVacio(this)  && comprobarText(this,".$long.")'  required  readonly ><br>\n";
-        }else if($type == 'varchar'){
-          $inputs .= "\t\t\t<input type='text' name='".$entity."' size = '".$long."' value = '<?= \$this->valores['".$field['Field']."'] ?>' onblur='esVacio(this)  && comprobarText(this,".$long.")'  required  readonly ><br>\n";
+        if($type == 'enum'){
+          $values = explode(")", $aux[1])[0];
+          $values_arr = explode(",", $values);
+          $inputs .= "\t\t\t".$field['Field']." :<select name='".$field['Field']."' required  readonly>\n";
+          foreach ($values_arr as $key => $value){
+            $selected = "";
+            $value_clean = trim($value ,"'");
+            $inputs .= "\t\t\t\t<option value='".$value_clean."' <?php if(\$this->valores['".$field['Field']."'] == '".$value_clean."') echo 'selected'; ?>>".$value_clean."</option>\n";
+          }
+          $inputs .= "\t\t\t</select><br>\n";
+        }else{
+          $long = explode(")", $aux[1])[0];
+          if($type == 'int'){
+            $inputs .= "\t\t\t".$field['Field']." :<input type='number' name='".$field['Field']."' min ='' max='' value = '<?= \$this->valores['".$field['Field']."'] ?>' onblur='esVacio(this)  && comprobarText(this,".$long.")'  required  readonly ><br>\n";
+          }else if($type == 'varchar'){
+            $inputs .= "\t\t\t".$field['Field']." :<input type='text' name='".$field['Field']."' size = '".$long."' value = '<?= \$this->valores['".$field['Field']."'] ?>' onblur='esVacio(this)  && comprobarText(this,".$long.")'  required  readonly ><br>\n";
+          }
         }
       }
     }
