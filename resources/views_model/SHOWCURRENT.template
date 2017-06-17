@@ -1,0 +1,29 @@
+<?php
+
+class **!!ENTITY!!**_SHOWCURRENT{
+
+		private $valores;
+
+	function __construct($valores){
+		$this->valores = $valores;
+		$this->render();
+		}
+
+		function render(){
+
+			include '../Locates/Strings_SPANISH.php';
+			include '../View/Header.php';
+
+
+	?>
+		<h1><?php echo $strings['Detalle'] . ' **!!ENTITY!!**' ?></h1>
+		<form name='Form' action='**!!ENTITY!!**_Controller.php' method='post' onsubmit='comprobar()'>
+**!!INPUTS!!**
+		</form>
+		<a href='../Controller/**!!ENTITY!!**_Controller.php'><?php echo $strings['Volver']; ?> </a>
+
+	<?php
+			include '../View/Footer.php';
+		} // fin del metodo render
+	} // fin de la clase
+	?>

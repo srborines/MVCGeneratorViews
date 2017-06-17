@@ -1,0 +1,27 @@
+<?php
+
+class **!!ENTITY!!**_ADD{
+
+
+  function __construct(){
+    $this->render();
+  }
+
+  function render(){
+
+    include '../View/Header.php';
+
+  ?>
+    <h1><?php echo $strings['Insertar'] . '**!!ENTITY!!**' ?></h1>
+    <form name = 'Form' action='../Controller/**!!ENTITY!!**_Controller.php' method='post' onsubmit='return comprobar_articulo()'>
+**!!INPUTS!!**
+      <input type='submit' name='action' value='ADD'>
+    </form>
+    <a href='../Controller/**!!ENTITY!!**_Controller.php'>Volver </a>
+<?php
+  include '../View/Footer.php';
+  }
+
+}
+
+?>
