@@ -186,11 +186,11 @@ function step_4(){
             //Add translations of entity
             $lang_app_en[$entity[0]] = $entity[0];
             $lang_app_es[$entity[0]] = $entity[0];
-            $lang_app_en[$entity[0]." management"] = $entity[0]." management"."1";
-            $lang_app_es[$entity[0]." management"] = "Gestión de ".$entity[0]."1";
+            $lang_app_en[$entity[0]." management"] = $entity[0]." management";
+            $lang_app_es[$entity[0]." management"] = "Gestión de ".$entity[0];
             foreach ($field_list as $field) {
-              $lang_app_en[$field['Field']] = $field['Field']."1";
-              $lang_app_es[$field['Field']] = $field['Field']."1";
+              $lang_app_en[$field['Field']] = $field['Field'];
+              $lang_app_es[$field['Field']] = $field['Field'];
             }
 
             try {
@@ -220,7 +220,6 @@ function step_4(){
         }else{
           $language_en_file_content_base = "<?php\n\$strings = \narray(\n)\n;\n ?>";
         }
-        //TODO:fill with array
         $parts_aux = explode("array(", $language_en_file_content_base);
         $part1 = $parts_aux[0]."array(";
         unset($parts_aux[0]);
@@ -242,11 +241,9 @@ function step_4(){
         }else{
           $language_es_file_content_base = "<?php\n\$strings = \narray(\n)\n;\n ?>";
         }
-        //TODO:fill with array
         $parts_aux = explode("array(", $language_es_file_content_base);
         $part1 = $parts_aux[0]."array(";
         unset($parts_aux[0]);
-        print_r($parts_aux);
         $part3 = implode("",$parts_aux);
         $part2 = "\n";
         foreach ($lang_app_es as $key => $value) {
@@ -257,7 +254,7 @@ function step_4(){
         fwrite($file_open, $file_end_content_es);
         fclose($file_open);
 
-        renderView("index-4",[]);
+        renderView("index-4",['directory' => $install_directory]);
         //Close Mysql connection
         closeMysqliConnection($conn);
       }else{

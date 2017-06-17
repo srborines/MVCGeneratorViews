@@ -17,7 +17,7 @@
 	'INSTALL_VALIDATION_FORM_DBNAME' => 'Select a database name',
   "credentials_error" => "Credentials error",
   "post_error" => "Problem with the POST request",
-  "alert_permission" => "--fill--",
+  "alert_permission" => "You must introduce a user that has <b>access to all databases</b> to can then select the database that you want generate.",
 
   //Second index
   "header-box-2" => "Database",
@@ -37,5 +37,11 @@
   "installDirectory-3" => "Directory",
   "installDirectoryplaceholder-3" => "Installation directory of the system",
   'submit-3' => "Generate views",
+  "INSTALL_VALIDATION_FORM_DBUSER-3" => "You must introduce a username to the system connect with database",
+  "INSTALL_VALIDATION_FORM_DBPASS-3" => "You must introduce a password to the user of database",
+  "INSTALL_VALIDATION_FORM_INSTALLDIRECTORY-3" => "You must introduce a directory of installation of the system",
+  "header-box-4" => "Installation successfull",
+  "alert-4" => "The installation had a successfull result! If you want to access to the index of de system click: ",
+  "here-4" => "here",
 	);
  ?>

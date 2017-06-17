@@ -25,8 +25,7 @@ class **!!ENTITY!!**_SHOWALL{
 
 	echo "<tr>";
 	foreach($this->lista as $titulo){
-		//change translate
-		echo	"<th>".$titulo."</th>";
+		echo	"<th>".$strings[$titulo]."</th>";
 	}
 	echo "</tr>";
 

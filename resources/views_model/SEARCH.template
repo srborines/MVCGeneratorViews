@@ -19,7 +19,7 @@ class **!!ENTITY!!**_SEARCH{
 **!!INPUTS!!**
 				<input type='submit' name='action' value='SEARCH'><br>
 			</form>
-      <a href='../Controller/**!!ENTITY!!**_Controller.php'>Volver</a>
+      <a href='../Controller/**!!ENTITY!!**_Controller.php'><?= $strings['Volver'] ?></a>
 <?php
 		include '../View/Footer.php';
 	}

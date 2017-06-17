@@ -19,7 +19,7 @@
 	'INSTALL_VALIDATION_FORM_DBUSER' => 'Introduce un usuario para la base de datos',
 	'INSTALL_VALIDATION_FORM_DBPASS' => 'Introduce una conraseña para la base de datos',
 	'INSTALL_VALIDATION_FORM_DBNAME' => 'Selecciona un nombre de base de datos',
-  "alert_permission" => "--fill--",
+  "alert_permission" => "Debes introducir un usuario que tenga <b>acceso a todas las bases de datos</b> para poder luego seleccionar la que desees autogenerar.",
 
   "credentials_error" => "Credenciales incorrectas",
   "post_error" => "Problema al realizar la petición POST",
@@ -47,5 +47,9 @@
   "INSTALL_VALIDATION_FORM_DBUSER-3" => "Debes introducir un nombre de usuario para que el sistema conecte con la base de datos",
   "INSTALL_VALIDATION_FORM_DBPASS-3" => "Debes instroducir una contraseña para el usuario de la base de datos",
   "INSTALL_VALIDATION_FORM_INSTALLDIRECTORY-3" => "Debes introducir un directorio de instalación del sistema",
-	);
+
+  "header-box-4" => "Instalación completada correctamente",
+  "alert-4" => "La instalación se realizó satisfactoriamente! Para acceder al index del sistema pulsa ",
+  "here-4" => "aquí ",
+  );
  ?>

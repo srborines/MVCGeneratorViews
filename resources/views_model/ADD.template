@@ -17,7 +17,7 @@ class **!!ENTITY!!**_ADD{
 **!!INPUTS!!**
       <input type='submit' name='action' value='ADD'>
     </form>
-    <a href='../Controller/**!!ENTITY!!**_Controller.php'>Volver </a>
+    <a href='../Controller/**!!ENTITY!!**_Controller.php'><?= $strings['Volver'] ?></a>
 <?php
   include '../View/Footer.php';
   }
