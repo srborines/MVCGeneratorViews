@@ -143,6 +143,17 @@ function step_4(){
         $path_views = $install_directory."/View/";
         if(!is_dir("./".$path_views)) mkdir($path_views);
 
+        //Create message View
+        $template_message_view = file_get_contents("./resources/views_model/MESSAGE.template");
+
+        $path_message_view_file = $path_views;
+        $filename = "MESSAGE_View.php";
+        $file = $path_message_view_file.$filename;
+        $file_open = fopen($file, "w");
+        fwrite($file_open, $template_message_view);
+        fclose($file_open);
+
+
         //Create menu file view
         $path_menu_file = $path_views;
         $filename = "menuLateral.php";
@@ -407,8 +418,6 @@ function generate_menu_view($entities){
 
   return $html;
 }
-
-
 
 function getLanguageVariable($lang){
   global $languages_path;
