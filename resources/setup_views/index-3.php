@@ -66,7 +66,7 @@
             <ul>
               <?php
               foreach ($parameters['entities'] as $entity) {
-                echo "<li>".$entity[0]."</li>";
+                echo "<li>".$entity."</li>";
               }
               ?>
             </ul>

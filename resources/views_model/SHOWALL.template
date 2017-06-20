@@ -16,7 +16,7 @@ class **!!ENTITY!!**_SHOWALL{
 
 		include 'Header.php';
 ?>
-		<h1><?php echo $strings['Mostrar todos']. $strings['**!!ENTITY!!**']; ?></h1>
+		<h1><?php echo $strings['Mostrar todos'] . " " . $strings['**!!ENTITY!!**']; ?></h1>
 		<a href='./**!!ENTITY!!**_Controller.php?action=SEARCH'><img src='../View/Icons/search.png'></a></a>
 		<a href='./**!!ENTITY!!**_Controller.php?action=ADD'><img src='../View/Icons/add.png'></a></br></br>
 		<br><br>

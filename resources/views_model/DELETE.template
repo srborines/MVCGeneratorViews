@@ -15,7 +15,7 @@
 			include '../View/Header.php';
 
 	?>
-			<h1><?php echo $strings['Borrar'] . 'articulo' ?></h1>
+			<h1><?php echo $strings['Borrar'] . " " . $strings['**!!ENTITY!!**'] ?></h1>
 			<form name = 'Form' action='../Controller/**!!ENTITY!!**_Controller.php' method='post' onsubmit = 'comprobar()'>
 **!!INPUTS!!**
 				<input type='submit' name='action' value='DELETE'><br>
