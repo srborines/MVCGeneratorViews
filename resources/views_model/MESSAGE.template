@@ -6,20 +6,31 @@ class MESSAGE{
 	private $volver;
 
 	function __construct($string, $volver){
+		//Initialize string
 		$this->string = $string;
+		//Initialize volver
 		$this->volver = $volver;	
+		//Render view
 		$this->render();
 	}
-
+	/** Render the view to generate the html
+	*/
 	function render(){
 
-		include '../Locates/Strings_'.$_SESSION['idioma'].'.php';
+		//include '../Locates/Strings_'.$_SESSION['idioma'].'.php';
+
+		//Include header element
 		include '../View/Header.php';
 		
+		//Print string
 		echo $strings[$this->string];
 
+		//Print anchor to go back
 		echo '<a href=\'' . $this->volver . "'>" . $strings['Volver'] . " </a>";
-		include '../View/Footer.php';
-	} //fin metodo render
 
-}
+		//Include footer element
+		include '../View/Footer.php';
+
+	} // end render
+} // end class
+?>

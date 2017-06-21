@@ -7,13 +7,18 @@ class **!!ENTITY!!**_SHOWALL{
 	private $volver;
 
 	function __construct($lista, $array){
+		//Initialize array
 		$this->datos = $array;
+		//Initialize lista
 		$this->lista = $lista;
+		//Render view
 		$this->render();
 	}
 
+	/** Render the view to generate the html
+	*/
 	function render(){
-
+		//Include header element
 		include 'Header.php';
 ?>
 		<h1><?php echo $strings['Mostrar todos'] . " " . $strings['**!!ENTITY!!**']; ?></h1>
@@ -24,12 +29,12 @@ class **!!ENTITY!!**_SHOWALL{
 <?php
 
 	echo "<tr>";
-	foreach($this->lista as $titulo){
+	foreach($this->lista as $titulo){	//Loop all fields name to make the header of the table
 		echo	"<th>".$strings[$titulo]."</th>";
 	}
 	echo "</tr>";
 
-	foreach ($this->datos as $datos) {
+	foreach ($this->datos as $datos) {	//Loop all data to make the table
 		echo "<tr>";
 		foreach($this->lista as $titulo){
 			echo "<td>".$datos[$titulo]."</td>";
@@ -50,7 +55,9 @@ class **!!ENTITY!!**_SHOWALL{
 
 
 <?php
-	include 'Footer.php';
-	} //render method
+		//Include footer element
+		include '../View/Footer.php';
 
-} //main class
+	} // end render
+} // end class
+?>

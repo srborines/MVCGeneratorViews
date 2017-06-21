@@ -413,7 +413,10 @@ function generate_inputs_from_fields($entity,$fields_skel,$show_values,$disabled
         break;
       case 'enum':
         $options = get_mysql_options_from_enum_field($type_raw);
-        $inputs .= "\t\t\t".$filed_name." :<select name='".$filed_name."'>\n";
+        $inputs .= "\t\t\t".$filed_name." :<select name='".$filed_name."'";
+        if($disabled) $inputs .= " disabled ";
+        if($required) $inputs .= " required ";
+        $inputs .= ">\n";
         foreach ($options as $option) {
           $inputs .= "\t\t\t\t<option ";
           if($show_values) $inputs .=" value='".$option."' <?php if(\$this->valores['".$filed_name."'] == '".$option."') echo 'selected'; ?> ";

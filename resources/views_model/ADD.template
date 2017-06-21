@@ -4,24 +4,30 @@ class **!!ENTITY!!**_ADD{
 
 
   function __construct(){
+  	//Render the view
     $this->render();
   }
-
+  /** Render the view to generate the html
+  */
   function render(){
 
+  	//Include header element
     include '../View/Header.php';
 
   ?>
     <h1><?php echo $strings['Insertar'] . " " . $strings['**!!ENTITY!!**'] ?></h1>
+    <!-- form of ADD -->
     <form name = 'Form' action='../Controller/**!!ENTITY!!**_Controller.php' method='post' onsubmit='return comprobar_**!!ENTITY!!**()'>
 **!!INPUTS!!**
       <input type='submit' name='action' value='ADD'>
     </form>
+    <!-- ./form of ADD -->
     <a href='../Controller/**!!ENTITY!!**_Controller.php'><?= $strings['Volver'] ?></a>
 <?php
-  include '../View/Footer.php';
-  }
+	//Include footer element
+	include '../View/Footer.php';
+  } //End render
 
-}
+} //End class
 
 ?>

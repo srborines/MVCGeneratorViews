@@ -4,28 +4,36 @@ class **!!ENTITY!!**_EDIT{
 
   private $valores;
 
-  function __construct($valores){
-  			$this->valores = $valores;
-  			$this->render();
-  		}
+	function __construct($valores){
+		//Initialize valores
+		$this->valores = $valores;
+		//Render the view
+		$this->render();
+	}
+	  /** Render the view to generate the html
+	  */
+	function render(){
 
-  		function render(){
-
-  			include '../Locates/Strings_SPANISH.php';
-  			include '../View/Header.php';
+		//Include header element
+		include '../View/Header.php';
 
 
   	?>
 
     <h1><?php echo $strings['Insertar'] . " " . $strings['**!!ENTITY!!**'] ?></h1>
+    <!-- form of EDIT -->
     <form name='Form' action="./**!!ENTITY!!**_Controller.php?action=EDIT" method="POST" onsubmit='return comprobar_**!!ENTITY!!**()'>
 **!!INPUTS!!**
       <input type='submit' name='action' value='EDIT'>
     </form>
+    <!-- ./form of EDIT -->
     <a href='../Controller/**!!ENTITY!!**_Controller.php'><?php echo $strings['Volver']; ?> </a>
 
 <?php
-  include '../View/Footer.php';
-  } // fin del metodo render
-} // fin de la clase
+
+		//Include footer element
+		include '../View/Footer.php';
+
+	} // end render
+} // end class
 ?>

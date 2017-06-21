@@ -5,24 +5,30 @@
 	private $valores;
 
 		function __construct($valores){
+			//Initialize valores
 			$this->valores = $valores;
+			//Render the view
 			$this->render();
 		}
-
+		  /** Render the view to generate the html
+		  */
 		function render(){
 
-			include '../Locates/Strings_SPANISH.php';
+			//Include header element
 			include '../View/Header.php';
 
 	?>
 			<h1><?php echo $strings['Borrar'] . " " . $strings['**!!ENTITY!!**'] ?></h1>
+			<!-- form of DELETE -->
 			<form name = 'Form' action='../Controller/**!!ENTITY!!**_Controller.php' method='post' onsubmit = 'comprobar()'>
 **!!INPUTS!!**
 				<input type='submit' name='action' value='DELETE'><br>
 			</form>
+			<!-- ./form of DELETE -->
 			<a href='../Controller/**!!ENTITY!!**_Controller.php'><?= $strings['Volver'] ?></a>
 <?php
+		//Include footer element
 		include '../View/Footer.php';
-	}
-}
+	} //End render
+} //End class
 ?>

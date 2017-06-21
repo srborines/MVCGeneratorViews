@@ -2,27 +2,30 @@
 
 class **!!ENTITY!!**_SEARCH{
 
-		function __construct(){
-			$this->render();
-		}
+	function __construct(){
+		//Render the view
+		$this->render();
+	}
+	/** Render the view to generate the html
+	*/
+	function render(){
+?>
 
-		function render(){
-	?>
-
-	<?php
-			include '../Locates/Strings_SPANISH.php';
-
-			include '../View/Header.php';
-	?>
+<?php
+		//Include header element
+		include '../View/Header.php';
+?>
 			<h1><?php echo $strings['Buscar'] . " " . $strings['**!!ENTITY!!**'] ?></h1>
+			<!-- form of SEARCH -->
 			<form name = 'Form' action='../Controller/**!!ENTITY!!**_Controller.php' method='post' onsubmit = 'comprobar()'>
 **!!INPUTS!!**
 				<input type='submit' name='action' value='SEARCH'><br>
 			</form>
+			<!-- ./form of SEARCH -->
       <a href='../Controller/**!!ENTITY!!**_Controller.php'><?= $strings['Volver'] ?></a>
 <?php
+		//Include footer element
 		include '../View/Footer.php';
-	}
-
-}
+	} // end render
+} // end class
 ?>
