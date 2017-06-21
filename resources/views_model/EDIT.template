@@ -18,7 +18,7 @@ class **!!ENTITY!!**_EDIT{
   	?>
 
     <h1><?php echo $strings['Insertar'] . " " . $strings['**!!ENTITY!!**'] ?></h1>
-    <form action="./**!!ENTITY!!**_Controller.php?action=EDIT" method="POST">
+    <form name='Form' action="./**!!ENTITY!!**_Controller.php?action=EDIT" method="POST" onsubmit='return comprobar_**!!ENTITY!!**()'>
 **!!INPUTS!!**
       <input type='submit' name='action' value='EDIT'>
     </form>

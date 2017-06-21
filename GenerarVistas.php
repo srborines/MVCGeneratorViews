@@ -32,11 +32,17 @@ if(function_exists($function_name)){
 }
 
 
+/********************************************//**
+ *  Steps of the installer
+ ***********************************************/
 
+/** Render a static view to ask to the user about database manager credentials
+*/
 function step_1(){
   render_view("index",[]);
 }
-
+/** Check the credentials, save the credentials in session, show to the user all databases
+*/
 function step_2(){
   //Check if was a POST request
   if($_SERVER['REQUEST_METHOD'] === 'POST'){
@@ -71,7 +77,9 @@ function step_2(){
     render_view("index",['error' =>"post_error"]);
   }
 }
-
+/** Save database in session, show the user all entities of the database selected,
+* ask to the user a new database user and the install directory to the system
+*/
 function step_3(){
   //Check if was a POST request
   if($_SERVER['REQUEST_METHOD'] === 'POST'){
@@ -106,7 +114,9 @@ function step_3(){
     render_view("index",['error' =>"post_error"]);
   }
 }
-
+/** Create user in database, obtain specification of the database,
+* generate all the MVC system, show a static view to the user
+*/
 function step_4(){
   //Check if was a POST request
   if($_SERVER['REQUEST_METHOD'] === 'POST'){
@@ -141,7 +151,7 @@ function step_4(){
 
         render_view("index-4",['directory' => $install_directory]);
         //Close Mysql connection
-        closeMysqliConnection($conn);
+        close_mysqli_connection($conn);
       }else{
         render_view("index",['error' =>"credentials_error"]);
       }
@@ -154,6 +164,15 @@ function step_4(){
 }
 
 
+
+/********************************************//**
+ *  Functions of generation of MVC System
+ ***********************************************/
+
+/** Create all the directories and files of the MVC system
+* @param $skelDB Specifications of database provides by mysql
+* @param $install_directory Path where will be instaled all the system
+*/
 function generate_folders_and_files_MVC($skelDB,$install_directory){
   //Create install directory if doesn't exist
   create_path_if_doesnt_exist($install_directory);
@@ -168,17 +187,15 @@ function generate_folders_and_files_MVC($skelDB,$install_directory){
   //Create menu file view
   create_menu_file_view($skelDB,$path_views);
 
-  //Generate entities views_model
-  generate_entities_views($skelDB,$path_views);
+  //Create entities views_model
+  create_entities_views($skelDB,$path_views);
 
   //Create directory 'Locates' if doesn't exist
   $path_locates = $install_directory."/Locates/";
   create_path_if_doesnt_exist($path_locates);
 
-//ONLY DEVELOP
-die();
-  //Create language files
-  create_languages_files($skelDB,$path_locates,['ENGLISH','SPANISH']);
+  //Append variables/Create language files
+  create_and_fill_languages_files($skelDB,$path_locates,['ENGLISH','SPANISH']);
 
   //Create directory 'View/js' if doesn't exist
   $path_view_js = $install_directory."/View/js/";
@@ -213,7 +230,16 @@ die();
 
 }
 
-function generate_entities_views($skelDB,$path_views){
+
+/********************************************//**
+ *  Functions of generation of the dinamic views
+ ***********************************************/
+
+/** Create all the views available to the entities in the database
+* @param $skelDB Especifications of database provides by mysql
+* @param $path_views Full path of the directory to create the files
+*/
+function create_entities_views($skelDB,$path_views){
   global $views_available;
   foreach ($skelDB as $entity => $fields_skel) {
     foreach ($views_available as $action) {
@@ -222,14 +248,23 @@ function generate_entities_views($skelDB,$path_views){
     }
   }
 }
+/** Create a view with the content of the action specified
+* NOTE: (It execute a function or other to fill the file depends of the action)
+* @param $action Name of the action of the view
+* @param $view_file Full path of the view file
+* @param $entity Name of a entity (table of database)
+* @param $fields_skel Especifications of the fields from a database provides by mysql
+*/
 function create_every_view($action,$view_file,$entity,$fields_skel){
   $file = $view_file;
   $function_content = "generate_".$action."_view";
   $content = $function_content($entity,$fields_skel);
   create_file($file, $content);
 }
-
-//Generate contents of views
+/** Get the content of the ADD view to the current entity with its fields
+* @param $entity Name of the current entity (table of database)
+* @param $skelDB Especifications of database provides by mysql
+*/
 function generate_ADD_view($entity,$fields_skel){
   $template = file_get_contents("./resources/views_model/ADD.template");
 
@@ -244,6 +279,10 @@ function generate_ADD_view($entity,$fields_skel){
 
   return $html;
 }
+/** Get the content of the DELETE view to the current entity with its fields
+* @param $entity Name of the current entity (table of database)
+* @param $skelDB Especifications of database provides by mysql
+*/
 function generate_DELETE_view($entity,$fields_skel){
     $template = file_get_contents("./resources/views_model/DELETE.template");
 
@@ -258,6 +297,10 @@ function generate_DELETE_view($entity,$fields_skel){
 
     return $html;
 }
+/** Get the content of the EDIT view to the current entity with its fields
+* @param $entity Name of the current entity (table of database)
+* @param $skelDB Especifications of database provides by mysql
+*/
 function generate_EDIT_view($entity,$fields_skel){
   $template = file_get_contents("./resources/views_model/EDIT.template");
 
@@ -272,6 +315,10 @@ function generate_EDIT_view($entity,$fields_skel){
 
   return $html;
 }
+/** Get the content of the SEARCH view to the current entity with its fields
+* @param $entity Name of the current entity (table of database)
+* @param $skelDB Especifications of database provides by mysql
+*/
 function generate_SEARCH_view($entity,$fields_skel){
     $template = file_get_contents("./resources/views_model/SEARCH.template");
 
@@ -286,16 +333,25 @@ function generate_SEARCH_view($entity,$fields_skel){
 
     return $html;
 }
+/** Get the content of the SHOWALL view to the current entity with its fields
+* @param $entity Name of the current entity (table of database)
+* @param $skelDB Especifications of database provides by mysql
+*/
 function generate_SHOWALL_view($entity,$fields_skel){
     $template = file_get_contents("./resources/views_model/SHOWALL.template");
 
     $key = get_mysql_key_from_field($fields_skel);
+    $url_key = implode("&", $key);
 
     $html = str_replace("**!!ENTITY!!**", $entity, $template);
-    $html = str_replace("**!!KEYURL!!**", $key, $html);
+    $html = str_replace("**!!KEYURL!!**", $url_key, $html);
 
     return $html;
 }
+/** Get the content of the SHOWCURRENT view to the current entity with its fields
+* @param $entity Name of the current entity (table of database)
+* @param $skelDB Especifications of database provides by mysql
+*/
 function generate_SHOWCURRENT_view($entity,$fields_skel){
     $template = file_get_contents("./resources/views_model/SHOWCURRENT.template");
 
@@ -310,7 +366,15 @@ function generate_SHOWCURRENT_view($entity,$fields_skel){
 
     return $html;
 }
-
+/** Generate the content of a form depending of the fields and the options introduced to complete all the views
+* @param $entity Name of the current entity (table of database)
+* @param $fields_skel Especifications of database fields provides by mysql
+* @param $show_values Flag to enable/disable show current values in the inputs
+* @param $disabled Flag to enable/disable the tag disabled in the inputs
+* @param $required Flag to enable/disable the tag required in the inputs
+* @param $validation Flag to enable/disable the validation in the inputs
+* @return $inputs String with the html of all inputs generated
+*/
 function generate_inputs_from_fields($entity,$fields_skel,$show_values,$disabled,$required,$validation){
   $inputs = "";
   foreach ($fields_skel as $filed_name => $fieldSkel) {
@@ -324,7 +388,7 @@ function generate_inputs_from_fields($entity,$fields_skel,$show_values,$disabled
         $long = get_mysql_long_from_field($type_raw);
         $inputs .= "\t\t\t".$filed_name." :<input type='number' name='".$filed_name."' size='".$long."' ";
         if($show_values) $inputs .= " value = '<?= \$this->valores['".$filed_name."'] ?>' ";
-        if($show_values) $inputs .= " onblur='true ".$esVacio."  && comprobarInt(this,".$long.")' ";
+        if($validation) $inputs .= " onblur='true ".$esVacio."  && comprobarInt(this,".$long.")' ";
         if($disabled) $inputs .= " disabled ";
         if($required) $inputs .= " required ";
         $inputs .= "><br>\n";
@@ -333,7 +397,7 @@ function generate_inputs_from_fields($entity,$fields_skel,$show_values,$disabled
         $long = get_mysql_long_from_field($type_raw);
         $inputs .= "\t\t\t".$filed_name." :<input type='text' name='".$filed_name."' min =''max='' ";
         if($show_values) $inputs .= " value = '<?= \$this->valores['".$filed_name."'] ?>' ";
-        if($show_values) $inputs .= " onblur='true ".$esVacio."  && comprobarInt(this,".$long.")' ";
+        if($validation) $inputs .= " onblur='true ".$esVacio."  && comprobarInt(this,".$long.")' ";
         if($disabled) $inputs .= " disabled ";
         if($required) $inputs .= " required ";
         $inputs .= "><br>\n";
@@ -342,7 +406,7 @@ function generate_inputs_from_fields($entity,$fields_skel,$show_values,$disabled
         $long = get_mysql_long_from_field($type_raw);
         $inputs .= "\t\t\t".$filed_name." :<input type='date' name='".$filed_name."' size='".$long."' ";
         if($show_values) $inputs .= " value = '<?= \$this->valores['".$filed_name."'] ?>' ";
-        if($show_values) $inputs .= " onblur='true ".$esVacio."  && comprobarInt(this,".$long.")' ";
+        if($validation) $inputs .= " onblur='true ".$esVacio."  && comprobarInt(this,".$long.")' ";
         if($disabled) $inputs .= " disabled ";
         if($required) $inputs .= " required ";
         $inputs .= "><br>\n";
@@ -352,7 +416,7 @@ function generate_inputs_from_fields($entity,$fields_skel,$show_values,$disabled
         $inputs .= "\t\t\t".$filed_name." :<select name='".$filed_name."'>\n";
         foreach ($options as $option) {
           $inputs .= "\t\t\t\t<option ";
-          if($show_values)$inputs .=" value='".$option."' <?php if(\$this->valores['".$filed_name."'] == '".$option."') echo 'selected'; ?> ";
+          if($show_values) $inputs .=" value='".$option."' <?php if(\$this->valores['".$filed_name."'] == '".$option."') echo 'selected'; ?> ";
           $inputs .= " >".$option."</option>\n";
         }
         $inputs .= "\t\t\t</select><br>\n";
@@ -363,101 +427,60 @@ function generate_inputs_from_fields($entity,$fields_skel,$show_values,$disabled
     }
 
   }
+  return $inputs;
 }
 
-//AUX file functions
-function create_path_if_doesnt_exist($path){
-  if(!is_dir("./".$path)) mkdir($path, 0777);
-}
-function create_file($file,$content){
-  $file_open = fopen($file, "w");
-  fwrite($file_open, $content);
-  fclose($file_open);
-  chmod($file,0777);
-}
-function copy_file($file_source,$file_destination){
-  copy($file_source, $file_destination);
-  chmod($file_destination,0777);
-}
 
-//AUX folder functions
-function copy_all_directory_content($path_source,$path_destination){
-  $cdir = scandir($source_path);
-  foreach ($cdir as $file) {
-    if (!in_array($file,array(".",".."))) copy_file($source_path.$file,$path_destination.$file);
-  }
-}
+/********************************************//**
+ *  Copy static files functions
+ ***********************************************/
 
-//AUX installer functions
-function get_language_variable($lang){
-  global $languages_path;
-
-  $language_filename = $lang.".php";
-  $languages_path = $languages_path;
-
-  if(is_dir($languages_path)){
-    $language_file = $languages_path.$language_filename;
-    if(file_exists($language_file)){
-      include_once($language_file);
-      return $language_array;
-    }else{
-      render_view("error", ['error' => "File of language '".$language_file."' doesn't exist."]);
-    }
-  }else{
-    render_view("error", ['error' => "The directory of views '".$languages_path."' doesn't exist."]);
-    exit();
-  }
-}
-function render_view($view_name, $parameters){
-  global $views_path, $lang_array;;
-
-  $views_path = $views_path;
-  $view_filename = $view_name.".php";
-  if(is_dir($views_path)){
-    $view_file = $views_path.$view_filename;
-    if(file_exists($view_file)){
-
-      include_once($view_file);
-
-    }else{
-      render_view("error", ['error' => "File of view '".$view_file."' doesn't exist."]);
-    }
-  }else{
-    echo "<span style='color:red'>Error: The directory of views '".$views_path."' doesn't exist.</span>";
-  }
-
-}
-
-//Copy js static folder
+/** Copy all script files to a folder
+* @param $path_view_js Full path of the directory to copy the estatic files
+*/
 function copy_static_scripts($path_view_js){
   $source_path = "./resources/resources_views_model/js/";
   copy_all_directory_content($source_path,$path_view_js);
 }
-
-//Copy css static folder
+/** Copy all css files to a folder
+* @param $path_view_css Full path of the directory to copy the estatic files
+*/
 function copy_static_css($path_view_css){
   $source_path = "./resources/resources_views_model/css/";
   copy_all_directory_content($source_path,$path_view_css);
 }
-
-//Copy Icons static folder
+/** Copy all icons files to a folder
+* @param $path_view_icon Full path of the directory to copy the estatic files
+*/
 function copy_static_icons($path_view_icon){
   $source_path = "./resources/resources_views_model/Icons/";
   copy_all_directory_content($source_path,$path_view_icon);
 }
-
-//Copy css static folder
+/** Copy all images files to a folder
+* @param $path_view_img Full path of the directory to copy the estatic files
+*/
 function copy_static_images($path_view_img){
   $source_path = "./resources/resources_views_model/img/";
   copy_all_directory_content($source_path,$path_view_img);
 }
 
-//Menu file view functions
+/********************************************//**
+ *  Functions of generation of menu file view
+ ***********************************************/
+
+/** Create the menu file view in a path with the anchors to all controlers of every entity
+* @param $skelDB Especifications of database provides by mysql
+* @param $path_views Full path of the directory to create the file
+*/
 function create_menu_file_view($skelDB,$path_views){
   $file = $path_views."menuLateral.php";
   $content = generate_menu_view($skelDB);
   create_file($file, $content);
 }
+/** Generate the content of the menu file view
+* @param $skelDB Especifications of database provides by mysql
+* @return $html String with the html of the menu file view
+*/
 function generate_menu_view($skelDB){
   $html = "</nav>\n\t<ul>\n";
   foreach ($skelDB as $entity => $fields) {
@@ -470,58 +493,135 @@ function generate_menu_view($skelDB){
   return $html;
 }
 
-//Message file view functions
+
+/********************************************//**
+ *  Functions of generation of message file view
+ ***********************************************/
+
+/** Create the message file view in a path
+* @param $path_views Full path of the directory to create the file
+*/
 function create_message_view_file($path_views){
   $file = $path_views."MESSAGE_View.php";
   $content = generate_message_view_file();
   create_file($file, $content);
 }
+/** Create the message file view in a path with a static file
+* @return $content Content of the static file
+*/
 function generate_message_view_file(){
-  $template_message_view = file_get_contents("./resources/views_model/MESSAGE.template");
-  return $template_message_view;
+  $content = file_get_contents("./resources/views_model/MESSAGE.template");
+  return $content;
 }
 
-//Language file functions TODO: caution with this because if the file exists is necessary only append the content
-function create_languages_files($skelDB,$path_locates,$languages){
+
+/********************************************//**
+ *  Functions of generation of language files
+ ***********************************************/
+
+/** Create the language files if don't exist and fill the content with the new language variables
+* @param $skelDB Especifications of database provides by mysql
+* @param $path_locates Full path where will be genereted or filled the files
+* @param $languages Array with all the possible languages
+*/
+function create_and_fill_languages_files($skelDB,$path_locates,$languages){
   foreach ($languages as $language) {
     $file = $path_locates."Strings_".$language.".php";
-    create_languages_file($file);
+    if(!file_exists($file)) create_languages_file($file);
+    append_variables_language_file($file,$language,$skelDB);
   }
 }
-function create_languages_file($file,$language){
-  $content = generate_content_language_file($language,$skelDB);
-  create_file($file, $content);
-
+/** Create the language file in disc with the skel content
+* @param $file Full path of file to be created
+*/
+function create_languages_file($file){
+    $basic_content = generate_skel_content_language_file();
+    create_file($file, $basic_content);
 }
-function generate_content_language_file($language,$skelDB){
-  //TODO: do that it works
-  return false;
+/** Generate the basic content of a language file
+*/
+function generate_skel_content_language_file(){
+  return "<?php\n\$strings = \narray(\n)\n;\n ?>";
+}
+/** Append the new translations to the language files in disc
+* @param $file Full path of the file to be appended the new translations
+* @param $language Language of the current file that is been procesed
+* @param $skelDB Especifications of database provides by mysql
+*/
+function append_variables_language_file($file,$language,$skelDB){
+  require_once($file);
+
+  $new_language_variables = generate_language_variables_of_views($language, $skelDB);
+  $strings = array_merge($strings,$new_language_variables);
+  $strings_to_php = array_assoc_to_string_php_format("strings",$strings);
+  $file_to_php = "<?php\n".$strings_to_php."\n ?>";
+  create_file($file, $file_to_php);
+}
+/** Get an array with al the translations generated from the database tables and fields
+* @param $language Language of the current file that is been procesed
+* @param $skelDB Especifications of database provides by mysql
+* @return $lang_vars Assoc array with the new translations
+*/
+function generate_language_variables_of_views($language,$skelDB){
+  //TODO: translate
+  $lang_vars = array();
+  foreach ($skelDB as $entity => $fields_skel) {
+    $lang_vars[$entity] = $entity;
+    $lang_vars[$entity." management"] = $entity." management";
+    foreach ($fields_skel as $field_name => $field_skel) {
+      $lang_vars[$field_name] = $field_name;
+    }
+  }
+  return $lang_vars;
 }
 
-//Comprobar js file functions
+
+/********************************************//**
+ *  Functions of generation of validation script
+ ***********************************************/
+
+/** Create the file comprobar.js in a specific directory with the content dinamic of the database specification
+* @param $skelDB Especifications of database provides by mysql (this  function need access to the tables and fields)
+* @param $path_view_js Full path of the directory where eill be created the file
+*/
 function create_comprobar_js($skelDB,$path_view_js){
   $file = $path_view_js."comprobar.js";
   $content = generate_content_comprobar_js($skelDB);
   create_file($file, $content);
 }
+/** Generate content of the file comprobar.js with the content dinamic of the database specification
+* @param $skelDB Especifications of database provides by mysql (this  function need access to the tables and fields)
+* @return $content Content of the script
+*/
 function generate_content_comprobar_js($skelDB){
-  $rules_js = array();
-  foreach ($skelDB as $entity) {
+  $content = "";
+  foreach ($skelDB as $entity_name => $entity) {
+      $rules_js = array();
       foreach ($entity as $field_name => $field_skel) {
+        $max = get_mysql_long_from_field($field_skel['Type']);
         if($field_skel['Null'] == 'NO') $rules_js[] = "esVacio(Form.".$field_name.")";
         $type = get_mysql_field_type($field_skel['Type']);
         if($type == "int"){
-          $rules_js[] = "comprobarInt(Form.".$field['Field'].", ".$values.")";
+          $rules_js[] = "comprobarInt(Form.".$field_name.", ".$max.")";
         }else if($type == "varchar"){
-          $rules_js[] = "comprobarText(Form.".$field['Field'].", ".$values.")";
+          $rules_js[] = "comprobarText(Form.".$field_name.", ".$max.")";
         }
       }
+      $content .= "function comprobar_".$entity_name."(){\nreturn(".implode(" && ", $rules_js).")\n}\n";
   }
-  $content_comprobar_js .= "function comprobar_".$entity."(){\nreturn(".implode(" && ", $rules_js).")\n}\n";
-  return $content_comprobar_js;
+  return $content;
 }
 
-//Database functions
+/********************************************//**
+ *  Database functions
+ ***********************************************/
+
+/** Open and obtain a connection with database manager
+* @param $server Remote machine with database manager
+* @param $username Username  to connect with database manager
+* @param $password Password to connect with database manager
+* @return $conn Object mysqli_connect
+*/
 function get_mysqli_connection($server, $username, $password){
 
   if($socket =@ fsockopen($server, 80, $errno, $errstr, 30)) {
@@ -537,9 +637,16 @@ function get_mysqli_connection($server, $username, $password){
   }
   return $conn;
 }
+/** Close the connection with database manager
+* @param $conn Object mysqli_connect
+*/
 function close_mysqli_connection($conn){
   $conn->close();
 }
+/** Get an array with the names of all databases in the database manager
+* @param $conn Object mysqli_connect
+* @return $databases Numeric array with all databases
+*/
 function get_DBs($conn){
   $databases = array();
 
@@ -549,6 +656,11 @@ function get_DBs($conn){
 
   return $databases;
 }
+/** Get an array with the names of all tables from a database
+* @param $conn Object mysqli_connect
+* @param $databsename Name of database
+* @return $tables Numeric array with all tables
+*/
 function get_tables_DB($conn,$databasename){
   $tables = array();
   $conn->select_db($databasename);
@@ -558,6 +670,12 @@ function get_tables_DB($conn,$databasename){
 
   return array_filter($tables);
 }
+/** Create new user in database manager
+* @param $conn Object mysqli_connect
+* @param $databsename Name of database
+* @param $new_user Username of the new user
+* @param $new_password Password of the new user
+*/
 function create_database_user($conn, $databasename, $new_user, $new_password){
 
   $sql1 = "CREATE USER '".$new_user."'@'localhost' IDENTIFIED BY '".$new_password."'";
@@ -566,6 +684,11 @@ function create_database_user($conn, $databasename, $new_user, $new_password){
   $sql2 = "GRANT ALL ON ".$databasename.".* TO '".$new_user."'@'localhost'";
   $result2 = $conn->query($sql2);
 }
+/** Get an array assoc with the names of all tables from a database and all the skel of their attributes
+* @param $conn Object mysqli_connect
+* @param $databsename Name of database
+* @return $tables Assoc array with all the information about tables and attributes
+*/
 function get_assoc_with_entities_and_fileds($conn,$databasename){
   $skelDB = array();
   $tables = get_tables_DB($conn,$databasename);
@@ -577,6 +700,10 @@ function get_assoc_with_entities_and_fileds($conn,$databasename){
   }
   return $skelDB;
 }
+/** Get the clear type (like a string) of a specification of a database field, turning the raw way that the database provides it
+* @param $type_raw_mysql Raw type of field provides by mysql
+* @return $type String with the type of the variable like for example date, enum, varchar..
+*/
 function get_mysql_field_type($type_raw_mysql){
   $type = $type_raw_mysql;
   if(strpos($type_raw_mysql, '(') !== false){
@@ -584,28 +711,156 @@ function get_mysql_field_type($type_raw_mysql){
   }
   return $type;
 }
+/** Get the maximum length of mysql variable, turning the raw way that the database provides it
+* @param $type_raw_mysql Raw type of field provides by mysql
+* @return $length Maximum length of the mysql variable
+*/
 function get_mysql_long_from_field($type_raw_mysql){
+  $length = 0;
   if( preg_match( '!\(([0-9]+)\)!', $type_raw_mysql, $match ) ){
-    return $match[1];
-  }else{
-    return 0;
+    $length = $match[1];
   }
+  return $length;
 }
+/** Get the values from a enum of mysql, turning the raw way that the database provides it
+* @param $type_raw_mysql Raw type of field provides by mysql
+* @return $options Possible values of the enum
+*/
 function get_mysql_options_from_enum_field($type_raw_mysql){
   $options = array();
-  if( preg_match( '!\(([^\)]+)\)!', $type_raw_mysql, $match ) ){
-    $options_with_quotes = explode(",", $match[0]);
+  if( preg_match( '!(?:\()([^\)]+(?:)\))!', $type_raw_mysql, $match ) ){
+    $aux = explode("(",$type_raw_mysql);
+    $options_raw = explode(")",$aux[1])[0];
+    $options_with_quotes = explode(",", $options_raw);
     foreach ($options_with_quotes as $option_quote) $options[] = trim($option_quote ,"'");
   }
   return $options;
 }
+/** Get an array with the keys of a table especification from mysql
+* @param $fields_skel Skel of table provides by mysql
+* @return $key Array enum with the individual keys of the table
+*/
 function get_mysql_key_from_field($fields_skel){
   $key = array();
   foreach ($fields_skel as $filed_name => $fieldSkel) {
     if($fieldSkel['Key']) $key[] = $filed_name."=<?= \$datos['".$filed_name."'] ?>";
   }
-  if(count($key) > 0) $key = implode("&", $key);
-
   return $key;
+}
+
+/********************************************//**
+ *  AUX file functions
+ ***********************************************/
+
+/** Create directory in disc if doesn't exist
+* @param $path Path of the directory to be created
+*
+*/
+function create_path_if_doesnt_exist($path){
+   if(!is_dir("./".$path)) mkdir($path, 0777);
+ }
+/** Create file in a directory in disc with a content
+* @param $file Full path of the file to be created
+* @param $content String with the content that the file will contain
+*/
+function create_file($file,$content){
+   $file_open = fopen($file, "w");
+   fwrite($file_open, $content);
+   fclose($file_open);
+   if(posix_getpwuid(fileowner($file)) == 'www-data') chmod($file,0777);
+ }
+/** Copy file from a directory to other
+* @param $file_source Full path of the source file
+* @param $file_destination Full path of the destination file
+*/
+function copy_file($file_source,$file_destination){
+  copy($file_source, $file_destination);
+   if(posix_getpwuid(fileowner($file_destination)) == 'www-data') chmod($file_destination,0777);
+}
+
+
+/********************************************//**
+ *  AUX folder functions
+ ***********************************************/
+
+/** Copy all the content of one directory to other
+* @param $source_path Path of the source directory
+* @param $destination_path Path of the destination directory
+*/
+function copy_all_directory_content($source_path,$destination_path){
+   $cdir = scandir($source_path);
+   foreach ($cdir as $file) {
+     if (!in_array($file,array(".",".."))) copy_file($source_path.$file,$destination_path.$file);
+   }
+ }
+
+
+/********************************************//**
+*  AUX array functions
+***********************************************/
+
+/** Transform an assoc array in a array to be readed by php (used to autogenerate php files)
+* @param $array_name Name of the array to be generated
+* @param $array Array assoc with the values to transform
+*/
+function array_assoc_to_string_php_format($array_name,$array){
+ $toret = "\$".$array_name."= array(\n";
+ foreach ($array as $key => $value) {
+   $toret .= "\t'".$key."' => '".$value."',\n";
+ }
+ $toret .= ");\n";
+ return $toret;
+}
+
+
+/********************************************//**
+*  AUX installer functions
+***********************************************/
+
+/** Include the language file and return the array of language to the setup views
+* IMPORTANT: this function can cut the execution of the script if doesn't exist the language file
+* @param $lang Abreviature of the language to get the file
+*/
+function get_language_variable($lang){
+ global $languages_path;
+
+ $language_filename = $lang.".php";
+ $languages_path = $languages_path;
+
+ if(is_dir($languages_path)){
+   $language_file = $languages_path.$language_filename;
+   if(file_exists($language_file)){
+     include_once($language_file);
+     return $language_array;
+   }else{
+     render_view("error", ['error' => "File of language '".$language_file."' doesn't exist."]);
+   }
+ }else{
+   render_view("error", ['error' => "The directory of views '".$languages_path."' doesn't exist."]);
+   exit();
+ }
+}
+/** Render a view to the client showing a file filled with parameters
+* @param $view_name Name of the view to show
+* @param $parameters Parameters to show in the view
+*/
+function render_view($view_name, $parameters){
+ global $views_path, $lang_array;;
+
+ $views_path = $views_path;
+ $view_filename = $view_name.".php";
+ if(is_dir($views_path)){
+   $view_file = $views_path.$view_filename;
+   if(file_exists($view_file)){
+
+     include_once($view_file);
+
+   }else{
+     render_view("error", ['error' => "File of view '".$view_file."' doesn't exist."]);
+   }
+ }else{
+   echo "<span style='color:red'>Error: The directory of views '".$views_path."' doesn't exist.</span>";
+ }
+
 }
 ?>

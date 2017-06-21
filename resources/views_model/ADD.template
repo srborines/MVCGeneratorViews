@@ -13,7 +13,7 @@ class **!!ENTITY!!**_ADD{
 
   ?>
     <h1><?php echo $strings['Insertar'] . " " . $strings['**!!ENTITY!!**'] ?></h1>
-    <form name = 'Form' action='../Controller/**!!ENTITY!!**_Controller.php' method='post' onsubmit='return comprobar_articulo()'>
+    <form name = 'Form' action='../Controller/**!!ENTITY!!**_Controller.php' method='post' onsubmit='return comprobar_**!!ENTITY!!**()'>
 **!!INPUTS!!**
       <input type='submit' name='action' value='ADD'>
     </form>
