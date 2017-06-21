@@ -1,0 +1,61 @@
+<?php
+
+    include_once '../Functions/Authentication.php';
+    if (!isset($_SESSION['idioma'])) {
+        $_SESSION['idioma'] = 'SPANISH';
+        include '../Locates/Strings_' . $_SESSION['idioma'] . '.php';
+    }
+    else{
+        //$_SESSION['idioma'] = 'SPANISH'; // quitar y solucionar el problema de que inicilice el idioma a galego
+        include '../Locates/Strings_' . $_SESSION['idioma'] . '.php';
+    }
+?>
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <title>Tables</title>
+        <title>Admin Home Page</title>
+        <!-- Bootstrap -->
+        <link href="../View/css/bootstrap.min.css" rel="stylesheet" media="screen">
+        <link href="../View/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
+        <link href="../View/css/styles.css" rel="stylesheet" media="screen">
+
+        <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+            <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+        <script src="../View/js/jquery-1.9.1.min.js"></script>
+        <script src="../View/js/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+        <script type="text/javascript" src="../View/js/Validaciones.js"></script>
+        <script type="text/javascript" src="../View/js/comprobar.js"></script>
+    </head>
+
+    <body>
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container-fluid">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"> <span class="icon-bar"></span>
+                     <span class="icon-bar"></span>
+                     <span class="icon-bar"></span>
+                    </a>
+                    <a class="brand" href="#">Admin Panel</a>
+                    <?php if (IsAuthenticated()){ ?>
+                    <div class="nav-collapse collapse">
+                        <ul class="nav pull-right">
+                                <a href='../Functions/Desconectar.php'><img width='40px' height='40px' src='../View/Icons/sign-error.png'></a>
+                        </ul>
+                    <?php } ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <div class="row-fluid">
+            <?php
+                if (IsAuthenticated()){
+                    include('menuLateral.php');
+                }
+              ?>
+                <!--/span-->
+                <div class="span9" id="content">

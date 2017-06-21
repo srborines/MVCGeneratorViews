@@ -25,14 +25,20 @@ class **!!ENTITY!!**_SHOWALL{
 		<a href='./**!!ENTITY!!**_Controller.php?action=SEARCH'><img src='../View/Icons/search.png'></a></a>
 		<a href='./**!!ENTITY!!**_Controller.php?action=ADD'><img src='../View/Icons/add.png'></a></br></br>
 		<br><br>
-		<table border = 1>
+		<div class="block">
+		<div class="navbar navbar-inner block-header">
+				<div class="muted pull-left">**!!ENTITY!!**</div>
+		</div>
+		<div class="block-content collapse in">
+				<div class="span12">
+		<table class="table">
 <?php
 
-	echo "<tr>";
+	echo "<thead><tr><tbody>";
 	foreach($this->lista as $titulo){	//Loop all fields name to make the header of the table
 		echo	"<th>".$strings[$titulo]."</th>";
 	}
-	echo "</tr>";
+	echo "<th></th></tr></thead>";
 
 	foreach ($this->datos as $datos) {	//Loop all data to make the table
 		echo "<tr>";
@@ -49,7 +55,11 @@ class **!!ENTITY!!**_SHOWALL{
 <?php
 	}
 ?>
-		</table>
+</tbody>
+</table>
+</div>
+</div>
+</div>
 
 		<a href='../index.php'><img src='../View/Icons/salir.png'></a>
 

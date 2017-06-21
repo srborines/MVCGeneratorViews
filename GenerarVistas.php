@@ -187,6 +187,12 @@ function generate_folders_and_files_MVC($skelDB,$install_directory){
   //Create menu file view
   create_menu_file_view($skelDB,$path_views);
 
+  //Create footer view
+  create_footer_file_view($path_views);
+
+  //Create header view
+  create_header_file_view($path_views);
+
   //Create entities views_model
   create_entities_views($skelDB,$path_views);
 
@@ -287,8 +293,8 @@ function generate_DELETE_view($entity,$fields_skel){
     $template = file_get_contents("./resources/views_model/DELETE.template");
 
     $show_values = true;
-    $disabled = true;
-    $required = true;
+    $disabled = false;
+    $required = false;
     $validation = false;
     $inputs = generate_inputs_from_fields($entity,$fields_skel,$show_values,$disabled,$required,$validation);
 
@@ -385,6 +391,7 @@ function generate_inputs_from_fields($entity,$fields_skel,$show_values,$disabled
 
     switch ($type) {
       case 'int':
+      case 'year':
         $long = get_mysql_long_from_field($type_raw);
         $inputs .= "\t\t\t".$filed_name." :<input type='number' name='".$filed_name."' size='".$long."' ";
         if($show_values) $inputs .= " value = '<?= \$this->valores['".$filed_name."'] ?>' ";
@@ -394,10 +401,11 @@ function generate_inputs_from_fields($entity,$fields_skel,$show_values,$disabled
         $inputs .= "><br>\n";
         break;
       case 'varchar':
+      case 'char':
         $long = get_mysql_long_from_field($type_raw);
         $inputs .= "\t\t\t".$filed_name." :<input type='text' name='".$filed_name."' min =''max='' ";
         if($show_values) $inputs .= " value = '<?= \$this->valores['".$filed_name."'] ?>' ";
-        if($validation) $inputs .= " onblur='true ".$esVacio."  && comprobarInt(this,".$long.")' ";
+        if($validation) $inputs .= " onblur='true ".$esVacio."  && comprobarText(this,".$long.")' ";
         if($disabled) $inputs .= " disabled ";
         if($required) $inputs .= " required ";
         $inputs .= "><br>\n";
@@ -406,7 +414,7 @@ function generate_inputs_from_fields($entity,$fields_skel,$show_values,$disabled
         $long = get_mysql_long_from_field($type_raw);
         $inputs .= "\t\t\t".$filed_name." :<input type='date' name='".$filed_name."' size='".$long."' ";
         if($show_values) $inputs .= " value = '<?= \$this->valores['".$filed_name."'] ?>' ";
-        if($validation) $inputs .= " onblur='true ".$esVacio."  && comprobarInt(this,".$long.")' ";
+        if($validation) $inputs .= " onblur='true ".$esVacio."'";
         if($disabled) $inputs .= " disabled ";
         if($required) $inputs .= " required ";
         $inputs .= "><br>\n";
@@ -485,13 +493,13 @@ function create_menu_file_view($skelDB,$path_views){
 * @return $html String with the html of the menu file view
 */
 function generate_menu_view($skelDB){
-  $html = "</nav>\n\t<ul>\n";
+  $html = "<div class='span3' id='sidebar'>\n\t<ul class='nav nav-list bs-docs-sidenav nav-collapse collapse'>\n";
   foreach ($skelDB as $entity => $fields) {
     $html .= "\t\t<li>\n";
     $html .= "\t\t\t<a href='../Controller/".$entity."_Controller.php'><?= \$strings['".$entity." management'] ?></a>\n";
     $html .= "\t\t</li>\n";
   }
-  $html .= "\t</ul>\n</nav>";
+  $html .= "\t</ul>\n</div>";
 
   return $html;
 }
@@ -514,6 +522,27 @@ function create_message_view_file($path_views){
 */
 function generate_message_view_file(){
   $content = file_get_contents("./resources/views_model/MESSAGE.template");
+  return $content;
+}
+
+function create_header_file_view($path_views){
+  $file = $path_views."Header.php";
+  $content = generate_header_file_view();
+  create_file($file, $content);
+}
+function generate_header_file_view(){
+  $content = file_get_contents("./resources/views_model/HEADER.template");
+  return $content;
+}
+
+
+function create_footer_file_view($path_views){
+  $file = $path_views."Footer.php";
+  $content = generate_footer_file_view();
+  create_file($file, $content);
+}
+function generate_footer_file_view(){
+  $content = file_get_contents("./resources/views_model/FOOTER.template");
   return $content;
 }
 

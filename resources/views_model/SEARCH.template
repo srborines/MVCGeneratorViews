@@ -17,7 +17,7 @@ class **!!ENTITY!!**_SEARCH{
 ?>
 			<h1><?php echo $strings['Buscar'] . " " . $strings['**!!ENTITY!!**'] ?></h1>
 			<!-- form of SEARCH -->
-			<form name = 'Form' action='../Controller/**!!ENTITY!!**_Controller.php' method='post' onsubmit = 'comprobar()'>
+			<form name = 'Form' action='../Controller/**!!ENTITY!!**_Controller.php' method='post' >
 **!!INPUTS!!**
 				<input type='submit' name='action' value='SEARCH'><br>
 			</form>

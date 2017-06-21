@@ -1,0 +1,20 @@
+        </div>
+      </div>
+    <hr>
+    <footer>IU - Samuel Rdgz Borines</footer>
+    </div>
+  <!--/.fluid-container-->
+  <script src="../View/js/jquery-1.9.1.min.js"></script>
+  <script src="../View/js/bootstrap.min.js"></script>
+  <script src="../View/js/scripts.js"></script>
+  <script src="../View/js/bootstrap-datepicker.min.js"></script>
+  <script>
+    var isChrome = !!window.chrome;
+    if (!isChrome) {
+      $.each($('input[type=date]'),function(){
+      $(this).datepicker({});
+      });
+    }
+  </script>
+  </body>
+</html>

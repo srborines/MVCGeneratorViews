@@ -20,7 +20,7 @@
 	?>
 			<h1><?php echo $strings['Borrar'] . " " . $strings['**!!ENTITY!!**'] ?></h1>
 			<!-- form of DELETE -->
-			<form name = 'Form' action='../Controller/**!!ENTITY!!**_Controller.php' method='post' onsubmit = 'comprobar()'>
+			<form name = 'Form' action='../Controller/**!!ENTITY!!**_Controller.php' method='post' >
 **!!INPUTS!!**
 				<input type='submit' name='action' value='DELETE'><br>
 			</form>
